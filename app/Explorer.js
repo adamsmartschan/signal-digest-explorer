@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { EU_COUNTRY_CODES } from "../lib/openfda";
 import {
   automotiveCompanies,
   automotiveNews,
@@ -129,8 +130,18 @@ export default function Explorer({ data }) {
     });
   };
 
-  const naHireRows = (data.newHireNA.rows || []).slice(0, CAP);
-  const euHireRows = (data.newHireEU.rows || []).slice(0, CAP);
+  // Filter hires by country before rendering: MD-NA should only show US-based
+  // hires, MD-EU only EU/UK-based hires. Clay's own location filtering doesn't
+  // reliably exclude out-of-region contacts, so we enforce it here using the
+  // "Country" field (ISO code) that Clay now writes to the sheet.
+  const naHireRowsAll = (data.newHireNA.rows || []).filter(
+    (r) => !r.Country || r.Country === "US"
+  );
+  const euHireRowsAll = (data.newHireEU.rows || []).filter(
+    (r) => !r.Country || EU_COUNTRY_CODES.includes(r.Country)
+  );
+  const naHireRows = naHireRowsAll.slice(0, CAP);
+  const euHireRows = euHireRowsAll.slice(0, CAP);
   const naJobRows = (data.jobsNA.rows || []).slice(0, CAP);
   const euJobRows = (data.jobsEU.rows || []).slice(0, CAP);
   const autoJobRows = (data.jobsAuto.rows || []).slice(0, CAP);
@@ -362,7 +373,7 @@ export default function Explorer({ data }) {
           </Section>
 
           <Section id="Hires" title="New Hires at Target Accounts"
-            meta={`${data.newHireNA.rows?.length || 0} rows in New Hire: MD-NA sheet, showing first ${CAP}`}
+            meta={`${naHireRowsAll.length} US hires (of ${data.newHireNA.rows?.length || 0} total rows), showing first ${CAP}`}
             error={data.newHireNA.error}>
             <DataTable sectionId="na-hires" columns={hireColumns} rows={naHireRows} selected={selected} onToggle={toggle} />
           </Section>
@@ -415,7 +426,7 @@ export default function Explorer({ data }) {
           </Section>
 
           <Section id="Hires" title="New R&D / Engineering Hires"
-            meta={`${data.newHireEU.rows?.length || 0} rows in New Hire: MD-EU sheet, showing first ${CAP}`}
+            meta={`${euHireRowsAll.length} EU/UK hires (of ${data.newHireEU.rows?.length || 0} total rows), showing first ${CAP}`}
             error={data.newHireEU.error}>
             <DataTable sectionId="eu-hires" columns={hireColumns} rows={euHireRows} selected={selected} onToggle={toggle} />
           </Section>
