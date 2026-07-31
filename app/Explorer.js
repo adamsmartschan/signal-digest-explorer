@@ -222,6 +222,19 @@ export default function Explorer({ data }) {
       render: (r) => <span className="badge amber">{r.status || "Open"}</span>,
       csv: (r) => r.status || "",
     },
+    {
+      key: "url",
+      label: "Detail",
+      render: (r) =>
+        r.url ? (
+          <a href={r.url} target="_blank" rel="noreferrer">
+            FDA record
+          </a>
+        ) : (
+          ""
+        ),
+      csv: (r) => r.url || "",
+    },
   ];
 
   const fda510kColumns = [
@@ -368,7 +381,6 @@ export default function Explorer({ data }) {
 
           <Section id="Recalls" title="FDA Recalls & Adverse Events"
             meta={`${data.fdaRecalls.rows?.length || 0} unique events, last 14 days`}
-            note="All events in this window are US firms — recalls has no EU counterpart configured for this client."
             error={data.fdaRecalls.error}>
             <DataTable sectionId="na-recalls" columns={recallColumns} rows={naRecallRows} selected={selected} onToggle={toggle} />
           </Section>
