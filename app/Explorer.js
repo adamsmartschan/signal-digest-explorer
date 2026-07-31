@@ -12,6 +12,22 @@ import {
 } from "../lib/staticData";
 
 const CAP = 15;
+// "Reasonable dates" window: show everything within this range rather than
+// truncating to a fixed row count. Sections with a real date field (Jobs'
+// "Post On", Promotions' "Start Date", Hires' "Date Added") are filtered to
+// this window; FDA sections are already date-bound by their own fetch
+// windows (60 days for recalls, 120 days for 510k due to publish lag) so
+// they're shown in full without an additional cap.
+const DATE_WINDOW_DAYS = 60;
+
+function withinWindow(dateStr, days) {
+  if (!dateStr) return true; // no date on record - don't exclude it
+  const d = new Date(dateStr);
+  if (isNaN(d)) return true;
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - days);
+  return d >= cutoff;
+}
 
 function fmtDate(iso) {
   if (!iso) return "";
@@ -135,22 +151,24 @@ export default function Explorer({ data }) {
   // reliably exclude out-of-region contacts, so we enforce it here using the
   // "Country" field (ISO code) that Clay now writes to the sheet.
   const naHireRowsAll = (data.newHireNA.rows || []).filter(
-    (r) => !r.Country || r.Country === "US"
+    (r) => (!r.Country || r.Country === "US") && withinWindow(r["Date Added"], DATE_WINDOW_DAYS)
   );
   const euHireRowsAll = (data.newHireEU.rows || []).filter(
-    (r) => !r.Country || EU_COUNTRY_CODES.includes(r.Country)
+    (r) => (!r.Country || EU_COUNTRY_CODES.includes(r.Country)) && withinWindow(r["Date Added"], DATE_WINDOW_DAYS)
   );
-  const naHireRows = naHireRowsAll.slice(0, CAP);
-  const euHireRows = euHireRowsAll.slice(0, CAP);
-  const naJobRows = (data.jobsNA.rows || []).slice(0, CAP);
-  const euJobRows = (data.jobsEU.rows || []).slice(0, CAP);
-  const autoJobRows = (data.jobsAuto.rows || []).slice(0, CAP);
-  const naPromoRows = (data.promoNA.rows || []).slice(0, CAP);
-  const euPromoRows = (data.promoEU.rows || []).slice(0, CAP);
-  const autoPromoRows = (data.promoAuto.rows || []).slice(0, CAP);
-  const naRecallRows = (data.fdaRecalls.rows || []).slice(0, CAP);
-  const na510kRows = (data.fda510k.us || []).slice(0, CAP);
-  const eu510kRows = (data.fda510k.eu || []).slice(0, CAP);
+  const naHireRows = naHireRowsAll;
+  const euHireRows = euHireRowsAll;
+  const naJobRows = (data.jobsNA.rows || []).filter((r) => withinWindow(r["Post On"], DATE_WINDOW_DAYS));
+  const euJobRows = (data.jobsEU.rows || []).filter((r) => withinWindow(r["Post On"], DATE_WINDOW_DAYS));
+  const autoJobRows = (data.jobsAuto.rows || []).filter((r) => withinWindow(r["Post On"], DATE_WINDOW_DAYS));
+  const naPromoRows = (data.promoNA.rows || []).filter((r) => withinWindow(r["Start Date"], DATE_WINDOW_DAYS));
+  const euPromoRows = (data.promoEU.rows || []).filter((r) => withinWindow(r["Start Date"], DATE_WINDOW_DAYS));
+  const autoPromoRows = (data.promoAuto.rows || []).filter((r) => withinWindow(r["Start Date"], DATE_WINDOW_DAYS));
+  // Recalls (60-day fetch window) and 510k (120-day fetch window, FDA publish
+  // lag) are already date-bound at the source - show everything returned.
+  const naRecallRows = data.fdaRecalls.rows || [];
+  const na510kRows = data.fda510k.us || [];
+  const eu510kRows = data.fda510k.eu || [];
 
   const hireColumns = [
     { key: "Name", label: "Name" },
@@ -337,7 +355,7 @@ export default function Explorer({ data }) {
             </table>
           </Section>
 
-          <Section id="Promotions" title="Promotions & Leadership Moves" meta={`${autoPromoRows.length} rows in Promo: Automotive sheet`}>
+          <Section id="Promotions" title="Promotions & Leadership Moves" meta={`${autoPromoRows.length} rows in Promo: Automotive sheet, last ${DATE_WINDOW_DAYS} days`}>
             <DataTable sectionId="auto-promo" columns={promoColumns} rows={autoPromoRows} selected={selected} onToggle={toggle}
               emptyMessage="No entries yet — the Promo: Automotive sheet tab is currently empty (header row only)." />
           </Section>
@@ -353,7 +371,7 @@ export default function Explorer({ data }) {
             </table>
           </Section>
 
-          <Section id="Open Roles" title="Open Engineering / R&D Roles" meta={`${autoJobRows.length} rows in Jobs: Automotive sheet`} error={data.jobsAuto.error}>
+          <Section id="Open Roles" title="Open Engineering / R&D Roles" meta={`${autoJobRows.length} rows in Jobs: Automotive sheet, last ${DATE_WINDOW_DAYS} days`} error={data.jobsAuto.error}>
             <DataTable sectionId="auto-jobs" columns={jobColumns} rows={autoJobRows} selected={selected} onToggle={toggle} />
           </Section>
         </div>
@@ -373,25 +391,25 @@ export default function Explorer({ data }) {
           </Section>
 
           <Section id="Hires" title="New Hires at Target Accounts"
-            meta={`${naHireRowsAll.length} US hires (of ${data.newHireNA.rows?.length || 0} total rows), showing first ${CAP}`}
+            meta={`${naHireRowsAll.length} US hires in the last ${DATE_WINDOW_DAYS} days (of ${data.newHireNA.rows?.length || 0} total rows)`}
             error={data.newHireNA.error}>
             <DataTable sectionId="na-hires" columns={hireColumns} rows={naHireRows} selected={selected} onToggle={toggle} />
           </Section>
 
           <Section id="Open Roles" title="Open R&D / NPI Roles"
-            meta={`${data.jobsNA.rows?.length || 0} rows in Jobs: MD-NA sheet, showing first ${CAP}`}
+            meta={`${naJobRows.length} rows in Jobs: MD-NA sheet, last ${DATE_WINDOW_DAYS} days (of ${data.jobsNA.rows?.length || 0} total rows)`}
             error={data.jobsNA.error}>
             <DataTable sectionId="na-jobs" columns={jobColumns} rows={naJobRows} selected={selected} onToggle={toggle} />
           </Section>
 
           <Section id="Promotions" title="Promotions at Target Accounts"
-            meta={`${data.promoNA.rows?.length || 0} rows in Promo: MD-NA sheet, showing first ${CAP}`}
+            meta={`${naPromoRows.length} rows in Promo: MD-NA sheet, last ${DATE_WINDOW_DAYS} days (of ${data.promoNA.rows?.length || 0} total rows)`}
             error={data.promoNA.error}>
             <DataTable sectionId="na-promo" columns={promoColumns} rows={naPromoRows} selected={selected} onToggle={toggle} />
           </Section>
 
           <Section id="Recalls" title="FDA Recalls & Adverse Events"
-            meta={`${data.fdaRecalls.rows?.length || 0} unique events, last 14 days`}
+            meta={`${naRecallRows.length} unique events, last ${DATE_WINDOW_DAYS} days`}
             error={data.fdaRecalls.error}>
             <DataTable sectionId="na-recalls" columns={recallColumns} rows={naRecallRows} selected={selected} onToggle={toggle} />
           </Section>
@@ -426,19 +444,19 @@ export default function Explorer({ data }) {
           </Section>
 
           <Section id="Hires" title="New R&D / Engineering Hires"
-            meta={`${euHireRowsAll.length} EU/UK hires (of ${data.newHireEU.rows?.length || 0} total rows), showing first ${CAP}`}
+            meta={`${euHireRowsAll.length} EU/UK hires in the last ${DATE_WINDOW_DAYS} days (of ${data.newHireEU.rows?.length || 0} total rows)`}
             error={data.newHireEU.error}>
             <DataTable sectionId="eu-hires" columns={hireColumns} rows={euHireRows} selected={selected} onToggle={toggle} />
           </Section>
 
           <Section id="Promotions" title="Promotions & Leadership Moves"
-            meta={`${data.promoEU.rows?.length || 0} rows in Promo: MD-EU sheet, showing first ${CAP}`}
+            meta={`${euPromoRows.length} rows in Promo: MD-EU sheet, last ${DATE_WINDOW_DAYS} days (of ${data.promoEU.rows?.length || 0} total rows)`}
             error={data.promoEU.error}>
             <DataTable sectionId="eu-promo" columns={promoColumns} rows={euPromoRows} selected={selected} onToggle={toggle} />
           </Section>
 
           <Section id="Open Roles" title="Open R&D / Engineering Roles"
-            meta={`${data.jobsEU.rows?.length || 0} rows in Jobs: MD-EU sheet, showing first ${CAP}`}
+            meta={`${euJobRows.length} rows in Jobs: MD-EU sheet, last ${DATE_WINDOW_DAYS} days (of ${data.jobsEU.rows?.length || 0} total rows)`}
             error={data.jobsEU.error}>
             <DataTable sectionId="eu-jobs" columns={jobColumns} rows={euJobRows} selected={selected} onToggle={toggle} />
           </Section>
