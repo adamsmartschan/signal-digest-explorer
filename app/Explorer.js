@@ -36,7 +36,6 @@ function fmtDate(iso) {
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
-js
 function InsightBanner({ insight }) {
   if (!insight) return null;
   return (
