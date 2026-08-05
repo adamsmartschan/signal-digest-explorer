@@ -36,6 +36,20 @@ function fmtDate(iso) {
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
+js
+function InsightBanner({ insight }) {
+  if (!insight) return null;
+  return (
+    <div className="insight-banner">
+      <span className="insight-icon">💡</span>
+      <div>
+        <div className="insight-label">Insight</div>
+        <div className="insight-text">{insight.text}</div>
+      </div>
+    </div>
+  );
+}
+
 function Section({ id, title, meta, note, children, error }) {
   return (
     <div className="section" data-section={id}>
@@ -318,6 +332,7 @@ export default function Explorer({ data }) {
         ))}
       </div>
 
+<InsightBanner insight={data.insights?.[activeTab]} />
       {activeTab === "automotive" && (
         <div>
           <Section id="Companies" title="Target Companies" meta={`${automotiveCompanies.length} companies`}>
