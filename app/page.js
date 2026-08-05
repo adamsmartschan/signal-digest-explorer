@@ -1,4 +1,3 @@
-js
 import { fetchSheet } from "../lib/sheets";
 import { fetch510k, fetchRecalls, EU_COUNTRY_CODES } from "../lib/openfda";
 import { generateInsight } from "../lib/insights";
