@@ -3,13 +3,15 @@
 import { useState, useMemo } from "react";
 import { EU_COUNTRY_CODES } from "../lib/openfda";
 import {
-  automotiveCompanies,
+  automotiveGroups,
   automotiveNews,
   automotiveHires,
   automotiveRecalls,
   naMedtechCompanies,
   euMedtechCompanies,
+  locateHire,
 } from "../lib/staticData";
+import EuropeMap from "./EuropeMap";
 
 const CAP = 15;
 // "Reasonable dates" window: show everything within this range rather than
@@ -183,6 +185,11 @@ export default function Explorer({ data }) {
   const na510kRows = data.fda510k.us || [];
   const eu510kRows = data.fda510k.eu || [];
 
+  const automotiveHiresWithCoords = automotiveHires.map((h) => ({
+    ...h,
+    coords: locateHire(h, automotiveGroups),
+  }));
+
   const hireColumns = [
     { key: "Name", label: "Name" },
     { key: "Company", label: "Company" },
@@ -334,17 +341,28 @@ export default function Explorer({ data }) {
 <InsightBanner insight={data.insights?.[activeTab]} />
       {activeTab === "automotive" && (
         <div>
-          <Section id="Companies" title="Target Companies" meta={`${automotiveCompanies.length} companies`}>
+          <Section id="Companies" title="Target Groups" meta={`${automotiveGroups.length} groups`}>
             <table>
               <thead>
-                <tr><th style={{width:28}}></th><th>Company</th><th>Domain</th><th>Country</th><th>Size</th><th>Notes</th></tr>
+                <tr><th style={{width:28}}></th><th>Group</th><th>Parent</th><th>Brands</th><th>Domain</th><th>EU/UK Plants</th></tr>
               </thead>
               <tbody>
-                {automotiveCompanies.map((c, i) => (
-                  <tr key={i}><td></td><td>{c.company}</td><td>{c.domain}</td><td>{c.country}</td><td>{c.size}</td><td>{c.notes}</td></tr>
+                {automotiveGroups.map((g, i) => (
+                  <tr key={i}>
+                    <td></td>
+                    <td>{g.name}</td>
+                    <td>{g.parent}</td>
+                    <td>{g.brands.join(", ")}</td>
+                    <td>{g.domain}</td>
+                    <td>{g.manufacturingLocations.length}</td>
+                  </tr>
                 ))}
               </tbody>
             </table>
+          </Section>
+
+          <Section id="Map" title="EU/UK Manufacturing Footprint" meta="what's happening where">
+            <EuropeMap groups={automotiveGroups} hires={automotiveHiresWithCoords} />
           </Section>
 
           <Section id="News" title="Industry & Competitor News" meta={`${automotiveNews.length} items`}>
