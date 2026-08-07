@@ -107,3 +107,17 @@ input[type="checkbox"] { cursor: pointer; }
 .company-sheet-section { margin-top: 16px; }
 .company-sheet-section-title { font-weight: 600; font-size: 13px; margin-bottom: 6px; color: #333; }
 .company-sheet-empty { color: #888; font-size: 13px; font-style: italic; }
+
+/* --- Content Draft feature (append to end of globals.css) --- */
+.content-draft-trigger { border: 1px solid #ddd; background: #fff; border-radius: 6px; padding: 3px 8px; font-size: 12px; cursor: pointer; white-space: nowrap; }
+.content-draft-trigger:hover { background: #f4f4f4; }
+.content-draft-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center; z-index: 50; }
+.content-draft-modal { background: #fff; border-radius: 10px; padding: 20px; width: 520px; max-width: 90vw; max-height: 85vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
+.content-draft-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.content-draft-close { border: 1px solid #ddd; background: #fff; border-radius: 6px; padding: 4px 10px; font-size: 12px; cursor: pointer; }
+.content-draft-controls { display: flex; gap: 8px; margin-bottom: 12px; }
+.content-draft-controls select { flex: 1; padding: 6px; border-radius: 6px; border: 1px solid #ddd; }
+.content-draft-error { color: #b91c1c; font-size: 13px; }
+.content-draft-textarea { width: 100%; font-family: inherit; font-size: 13px; border: 1px solid #ddd; border-radius: 6px; padding: 10px; box-sizing: border-box; }
+.content-draft-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; gap: 12px; }
+.content-draft-source { font-size: 11px; color: #888; }

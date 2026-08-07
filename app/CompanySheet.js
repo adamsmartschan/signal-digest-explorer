@@ -1,5 +1,7 @@
 "use client";
 
+import ContentDraftButton from "./ContentDraftButton";
+
 function fmtDate(iso) {
   if (!iso) return "";
   const d = new Date(iso);
@@ -17,6 +19,10 @@ export default function CompanySheet({
   onClose,
 }) {
   if (!group) return null;
+
+  // Most-recent tagged news/recall headline for this group, used as an
+  // optional natural "why reach out now" hook in generated content.
+  const hook = news[0]?.headline || recalls[0]?.headline || null;
 
   return (
     <div className="company-sheet">
@@ -72,6 +78,7 @@ export default function CompanySheet({
                 <th>Company</th>
                 <th>Site</th>
                 <th>LinkedIn</th>
+                <th>Content</th>
               </tr>
             </thead>
             <tbody>
@@ -89,6 +96,9 @@ export default function CompanySheet({
                     ) : (
                       ""
                     )}
+                  </td>
+                  <td>
+                    <ContentDraftButton person={p} group={group} hook={hook} />
                   </td>
                 </tr>
               ))}
