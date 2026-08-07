@@ -39,7 +39,18 @@ export default function CompanySheet({
 }) {
   if (!group) return null;
 
-  const hook = news[0]?.headline || recalls[0]?.headline || null;
+  const hooks = {
+    news: news[0]?.headline || null,
+    recall: recalls[0] ? `${recalls[0].headline} -- ${recalls[0].detail}` : null,
+    promo:
+      promoRows[0] && promoRows[0].Name
+        ? `${promoRows[0].Name} was promoted from ${promoRows[0]["Previous Title"] || "a prior role"} to ${promoRows[0]["New Title"]}`
+        : null,
+    job:
+      jobRows[0] && jobRows[0]["Job Title"]
+        ? `${group.name} is currently hiring for ${jobRows[0]["Job Title"]}${jobRows[0].Location ? ` (${jobRows[0].Location})` : ""}`
+        : null,
+  };
   const accent = accentFor(group.id);
 
   return (
@@ -101,7 +112,7 @@ export default function CompanySheet({
                     Profile
                   </a>
                 ) : null}
-                <ContentDraftButton person={p} group={group} hook={hook}>
+                <ContentDraftButton person={p} group={group} hooks={hooks}>
                   <IconMail size={15} />
                   Draft
                 </ContentDraftButton>

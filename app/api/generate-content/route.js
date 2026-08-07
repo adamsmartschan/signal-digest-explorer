@@ -7,7 +7,7 @@ import { generateContentDraft } from "../../../lib/contentGen";
 
 export async function POST(request) {
   const body = await request.json().catch(() => null);
-  const { contentType, person, group, hook } = body || {};
+  const { contentType, person, group, hooks } = body || {};
 
   if (!contentType || !person || !group) {
     return Response.json(
@@ -16,6 +16,6 @@ export async function POST(request) {
     );
   }
 
-  const result = await generateContentDraft(contentType, { person, group, hook });
+  const result = await generateContentDraft(contentType, { person, group, hooks });
   return Response.json(result);
 }

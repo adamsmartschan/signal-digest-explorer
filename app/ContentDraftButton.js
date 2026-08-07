@@ -3,12 +3,19 @@
 import { useState } from "react";
 import { IconMail, IconCopy, IconX, IconRefresh } from "./Icons";
 
-// Small registry of content types. Add more entries here later (e.g. a
-// recall follow-up email) -- the dropdown and generation flow already
-// support it, no redesign needed.
-const CONTENT_TYPES = [{ id: "introEmail", label: "Introductory email" }];
+// Registry of content types. Each pulls a different "hook" out of whatever
+// the company sheet has tagged for that group -- see the `hooks` prop below
+// and lib/contentGen.js on the server side for how each type resolves its
+// hook and what it does if that hook isn't available yet.
+const CONTENT_TYPES = [
+  { id: "introEmail", label: "Introductory email" },
+  { id: "linkedinNote", label: "LinkedIn connection note" },
+  { id: "recallFollowUp", label: "Recall follow-up email" },
+  { id: "openRoleFollowUp", label: "Open-role follow-up email" },
+  { id: "promoCongrats", label: "Promotion congratulations note" },
+];
 
-export default function ContentDraftButton({ person, group, hook, children }) {
+export default function ContentDraftButton({ person, group, hooks = {}, children }) {
   const [open, setOpen] = useState(false);
   const [contentType, setContentType] = useState(CONTENT_TYPES[0].id);
   const [loading, setLoading] = useState(false);
@@ -24,14 +31,14 @@ export default function ContentDraftButton({ person, group, hook, children }) {
       const res = await fetch("/api/generate-content", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ contentType: type || contentType, person, group, hook }),
+        body: JSON.stringify({ contentType: type || contentType, person, group, hooks }),
       });
       if (!res.ok) throw new Error("Generation failed");
       const data = await res.json();
       if (data.error) throw new Error(data.error);
       setResult(data);
     } catch (e) {
-      setError("Couldn't generate content -- try again.");
+      setError(e.message || "Couldn't generate content -- try again.");
       setResult(null);
     } finally {
       setLoading(false);
