@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { IconMail, IconCopy, IconX, IconRefresh } from "./Icons";
 
 // Small registry of content types. Add more entries here later (e.g. a
 // recall follow-up email) -- the dropdown and generation flow already
 // support it, no redesign needed.
-const CONTENT_TYPES = [{ id: "introEmail", label: "Introductory Email" }];
+const CONTENT_TYPES = [{ id: "introEmail", label: "Introductory email" }];
 
-export default function ContentDraftButton({ person, group, hook }) {
+export default function ContentDraftButton({ person, group, hook, children }) {
   const [open, setOpen] = useState(false);
   const [contentType, setContentType] = useState(CONTENT_TYPES[0].id);
   const [loading, setLoading] = useState(false);
@@ -52,26 +53,32 @@ export default function ContentDraftButton({ person, group, hook }) {
     <>
       <button
         type="button"
-        className="content-draft-trigger"
+        className="ghost-btn content-draft-trigger"
         onClick={() => {
           setOpen(true);
           if (!result) generate(contentType);
         }}
       >
-        ✉️ Draft
+        {children || (
+          <>
+            <IconMail size={15} />
+            Draft
+          </>
+        )}
       </button>
 
       {open && (
         <div className="content-draft-overlay" onClick={() => setOpen(false)}>
           <div className="content-draft-modal" onClick={(e) => e.stopPropagation()}>
             <div className="content-draft-header">
-              <strong>Draft content for {person.name}</strong>
+              <span className="content-draft-title">Draft for {person.name}</span>
               <button
                 type="button"
-                className="content-draft-close"
+                className="icon-btn"
                 onClick={() => setOpen(false)}
+                aria-label="Close"
               >
-                Close
+                <IconX size={16} />
               </button>
             </div>
 
@@ -93,10 +100,11 @@ export default function ContentDraftButton({ person, group, hook }) {
               </select>
               <button
                 type="button"
-                className="btn-primary"
+                className="ghost-btn"
                 onClick={() => generate(contentType)}
                 disabled={loading}
               >
+                <IconRefresh size={14} />
                 {loading ? "Generating…" : "Regenerate"}
               </button>
             </div>
@@ -109,15 +117,16 @@ export default function ContentDraftButton({ person, group, hook }) {
                   className="content-draft-textarea"
                   readOnly
                   value={result.text}
-                  rows={10}
+                  rows={9}
                 />
                 <div className="content-draft-footer">
                   <span className="content-draft-source">
-                    {result.source === "ai" ? "AI-generated" : "Template-based"} — copy and
-                    paste, nothing is sent automatically
+                    {result.source === "ai" ? "AI-generated" : "Template-based"} &middot; copy and
+                    paste only
                   </span>
-                  <button type="button" className="btn-primary" onClick={copy}>
-                    {copied ? "Copied!" : "Copy to clipboard"}
+                  <button type="button" className="pill-btn" onClick={copy}>
+                    <IconCopy size={14} />
+                    {copied ? "Copied" : "Copy"}
                   </button>
                 </div>
               </>

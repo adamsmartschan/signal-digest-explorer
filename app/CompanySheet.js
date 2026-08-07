@@ -1,6 +1,25 @@
 "use client";
 
 import ContentDraftButton from "./ContentDraftButton";
+import { IconMail, IconMapPin } from "./Icons";
+
+const GROUP_ACCENTS = {
+  ktm: { fg: "#9a3412", bg: "#ffedd5" },
+  bmw: { fg: "#1e3a8a", bg: "#dbeafe" },
+  piaggio: { fg: "#14532d", bg: "#dcfce7" },
+  ducati: { fg: "#7f1d1d", bg: "#fee2e2" },
+};
+
+function accentFor(groupId) {
+  return GROUP_ACCENTS[groupId] || { fg: "#3f3f46", bg: "#f1f1f1" };
+}
+
+function initials(name) {
+  const parts = (name || "").trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "?";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
 
 function fmtDate(iso) {
   if (!iso) return "";
@@ -20,21 +39,20 @@ export default function CompanySheet({
 }) {
   if (!group) return null;
 
-  // Most-recent tagged news/recall headline for this group, used as an
-  // optional natural "why reach out now" hook in generated content.
   const hook = news[0]?.headline || recalls[0]?.headline || null;
+  const accent = accentFor(group.id);
 
   return (
     <div className="company-sheet">
       <div className="company-sheet-header">
-        <div>
+        <div className="company-sheet-title">
+          <span className="company-sheet-dot" style={{ background: accent.fg }} />
           <strong>{group.name}</strong>
           <span className="company-sheet-meta">
-            {" "}
-            · {group.parent} · {group.brands.join(", ")}
+            {group.parent} &middot; {group.brands.join(", ")}
           </span>
         </div>
-        <button type="button" className="company-sheet-clear" onClick={onClose}>
+        <button type="button" className="ghost-btn" onClick={onClose}>
           Close
         </button>
       </div>
@@ -43,26 +61,19 @@ export default function CompanySheet({
         <div className="company-sheet-section-title">
           Plants ({group.manufacturingLocations.length})
         </div>
-        <table>
-          <thead>
-            <tr>
-              <th>Site</th>
-              <th>City</th>
-              <th>Country</th>
-              <th>Note</th>
-            </tr>
-          </thead>
-          <tbody>
-            {group.manufacturingLocations.map((loc) => (
-              <tr key={loc.siteId}>
-                <td>{loc.name}</td>
-                <td>{loc.city}</td>
-                <td>{loc.country}</td>
-                <td>{loc.note}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="plant-list">
+          {group.manufacturingLocations.map((loc) => (
+            <div className="plant-card" key={loc.siteId}>
+              <IconMapPin size={18} />
+              <div>
+                <div className="plant-card-title">
+                  {loc.name} &middot; {loc.city}, {loc.country}
+                </div>
+                <div className="plant-card-note">{loc.note}</div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className="company-sheet-section">
@@ -70,40 +81,33 @@ export default function CompanySheet({
         {people.length === 0 ? (
           <p className="company-sheet-empty">No people mapped to this group yet.</p>
         ) : (
-          <table>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Title</th>
-                <th>Company</th>
-                <th>Site</th>
-                <th>LinkedIn</th>
-                <th>Content</th>
-              </tr>
-            </thead>
-            <tbody>
-              {people.map((p, i) => (
-                <tr key={`${p.name}-${i}`}>
-                  <td>{p.name}</td>
-                  <td>{p.title}</td>
-                  <td>{p.company}</td>
-                  <td>{p.siteId && p.siteId !== "unmapped" ? p.siteId : "—"}</td>
-                  <td>
-                    {p.linkedin ? (
-                      <a href={p.linkedin} target="_blank" rel="noreferrer">
-                        Profile
-                      </a>
-                    ) : (
-                      ""
-                    )}
-                  </td>
-                  <td>
-                    <ContentDraftButton person={p} group={group} hook={hook} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="person-list">
+            {people.map((p, i) => (
+              <div className="person-row" key={`${p.name}-${i}`}>
+                <div className="person-avatar" style={{ background: accent.bg, color: accent.fg }}>
+                  {initials(p.name)}
+                </div>
+                <div className="person-info">
+                  <div className="person-name">{p.name}</div>
+                  <div className="person-title">{p.title}</div>
+                </div>
+                {p.siteId && p.siteId !== "unmapped" ? (
+                  <span className="pill" style={{ background: accent.bg, color: accent.fg }}>
+                    {p.siteId}
+                  </span>
+                ) : null}
+                {p.linkedin ? (
+                  <a href={p.linkedin} target="_blank" rel="noreferrer" className="ghost-btn">
+                    Profile
+                  </a>
+                ) : null}
+                <ContentDraftButton person={p} group={group} hook={hook}>
+                  <IconMail size={15} />
+                  Draft
+                </ContentDraftButton>
+              </div>
+            ))}
+          </div>
         )}
       </div>
 
@@ -112,7 +116,7 @@ export default function CompanySheet({
         {news.length === 0 ? (
           <p className="company-sheet-empty">No news items tagged to this group.</p>
         ) : (
-          <table>
+          <table className="sheet-table">
             <thead>
               <tr>
                 <th>Date</th>
@@ -142,7 +146,7 @@ export default function CompanySheet({
         {recalls.length === 0 ? (
           <p className="company-sheet-empty">No recalls tagged to this group.</p>
         ) : (
-          <table>
+          <table className="sheet-table">
             <thead>
               <tr>
                 <th>Date</th>
@@ -169,18 +173,18 @@ export default function CompanySheet({
 
       <div className="company-sheet-section">
         <div className="company-sheet-section-title">
-          Promotions &amp; Leadership Moves ({promoRows.length})
+          Promotions &amp; leadership moves ({promoRows.length})
         </div>
         {promoRows.length === 0 ? (
           <p className="company-sheet-empty">No promotions tagged to this group.</p>
         ) : (
-          <table>
+          <table className="sheet-table">
             <thead>
               <tr>
                 <th>Name</th>
-                <th>Previous Title</th>
-                <th>New Title</th>
-                <th>Start Date</th>
+                <th>Previous title</th>
+                <th>New title</th>
+                <th>Start date</th>
                 <th>LinkedIn</th>
               </tr>
             </thead>
@@ -208,14 +212,14 @@ export default function CompanySheet({
       </div>
 
       <div className="company-sheet-section">
-        <div className="company-sheet-section-title">Open Roles ({jobRows.length})</div>
+        <div className="company-sheet-section-title">Open roles ({jobRows.length})</div>
         {jobRows.length === 0 ? (
           <p className="company-sheet-empty">No open roles tagged to this group.</p>
         ) : (
-          <table>
+          <table className="sheet-table">
             <thead>
               <tr>
-                <th>Job Title</th>
+                <th>Job title</th>
                 <th>Location</th>
                 <th>Posted</th>
                 <th>Link</th>

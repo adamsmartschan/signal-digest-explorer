@@ -97,27 +97,63 @@ input[type="checkbox"] { cursor: pointer; }
 .map-drilldown th, .map-drilldown td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #eee; }
 .map-drilldown th { color: #666; font-weight: 600; }
 
+/* --- UI refresh: replaces the earlier company-row / company-sheet /
+   content-draft-* blocks in globals.css with a cleaner look. If you added
+   those blocks from the previous two patches, delete them and paste this
+   in instead -- same class names throughout, just restyled, so nothing
+   else needs to change. --- */
+
 .company-row:hover { background: #f7f7fb; }
 .company-row.selected { background: #eef2ff; }
-.company-sheet { margin-top: 12px; margin-bottom: 20px; border: 1px solid #e2e5ea; border-radius: 8px; padding: 16px; background: #fff; }
-.company-sheet-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
-.company-sheet-meta { color: #666; font-size: 13px; font-weight: normal; }
-.company-sheet-clear { border: 1px solid #ddd; background: #fff; border-radius: 6px; padding: 4px 10px; font-size: 12px; cursor: pointer; }
-.company-sheet-clear:hover { background: #f4f4f4; }
-.company-sheet-section { margin-top: 16px; }
-.company-sheet-section-title { font-weight: 600; font-size: 13px; margin-bottom: 6px; color: #333; }
-.company-sheet-empty { color: #888; font-size: 13px; font-style: italic; }
 
-/* --- Content Draft feature (append to end of globals.css) --- */
-.content-draft-trigger { border: 1px solid #ddd; background: #fff; border-radius: 6px; padding: 3px 8px; font-size: 12px; cursor: pointer; white-space: nowrap; }
-.content-draft-trigger:hover { background: #f4f4f4; }
-.content-draft-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center; z-index: 50; }
-.content-draft-modal { background: #fff; border-radius: 10px; padding: 20px; width: 520px; max-width: 90vw; max-height: 85vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
-.content-draft-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-.content-draft-close { border: 1px solid #ddd; background: #fff; border-radius: 6px; padding: 4px 10px; font-size: 12px; cursor: pointer; }
+.company-sheet { margin-top: 12px; margin-bottom: 24px; border: 1px solid #ececec; border-radius: 16px; padding: 20px 24px; background: #fff; }
+.company-sheet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+.company-sheet-title { display: flex; align-items: center; gap: 10px; font-size: 16px; }
+.company-sheet-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.company-sheet-meta { color: #888; font-size: 13px; font-weight: normal; }
+.company-sheet-section { margin-top: 22px; }
+.company-sheet-section-title { font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 10px; color: #999; }
+.company-sheet-empty { color: #999; font-size: 13px; font-style: italic; }
+
+/* Buttons */
+.ghost-btn { display: inline-flex; align-items: center; gap: 6px; border: none; background: transparent; color: #444; font-size: 13px; padding: 5px 8px; border-radius: 8px; cursor: pointer; }
+.ghost-btn:hover { background: #f2f2f2; }
+.ghost-btn:disabled { opacity: 0.5; cursor: default; }
+.icon-btn { display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border: none; background: transparent; border-radius: 50%; color: #666; cursor: pointer; }
+.icon-btn:hover { background: #f2f2f2; }
+.pill-btn { display: inline-flex; align-items: center; gap: 6px; border: 1px solid #e2e2e2; background: #fff; color: #333; font-size: 13px; padding: 6px 14px; border-radius: 999px; cursor: pointer; }
+.pill-btn:hover { background: #f7f7f7; }
+
+/* Plants */
+.plant-list { display: flex; flex-direction: column; gap: 8px; }
+.plant-card { display: flex; gap: 12px; align-items: flex-start; background: #fafafa; border-radius: 10px; padding: 12px 14px; color: #666; }
+.plant-card-title { font-size: 13px; font-weight: 500; color: #222; }
+.plant-card-note { font-size: 12px; color: #888; margin-top: 2px; line-height: 1.5; }
+
+/* People */
+.person-list { display: flex; flex-direction: column; }
+.person-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+.person-row:last-child { border-bottom: none; }
+.person-avatar { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; flex-shrink: 0; }
+.person-info { flex: 1; min-width: 0; }
+.person-name { font-size: 13px; font-weight: 500; color: #1a1a1a; }
+.person-title { font-size: 12px; color: #888; }
+.pill { font-size: 11px; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
+
+/* Generic tables inside the sheet (News, Recalls, Promotions, Open Roles) */
+.sheet-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.sheet-table th { text-align: left; font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: #999; padding: 6px 8px; border-bottom: 1px solid #eee; }
+.sheet-table td { padding: 8px; border-bottom: 1px solid #f3f3f3; color: #333; }
+.sheet-table tr:last-child td { border-bottom: none; }
+
+/* Content draft modal */
+.content-draft-overlay { position: fixed; inset: 0; background: rgba(20,20,20,0.4); display: flex; align-items: center; justify-content: center; z-index: 50; }
+.content-draft-modal { background: #fff; border-radius: 16px; padding: 22px; width: 480px; max-width: 90vw; max-height: 85vh; overflow-y: auto; }
+.content-draft-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.content-draft-title { font-size: 14px; font-weight: 500; }
 .content-draft-controls { display: flex; gap: 8px; margin-bottom: 12px; }
-.content-draft-controls select { flex: 1; padding: 6px; border-radius: 6px; border: 1px solid #ddd; }
+.content-draft-controls select { flex: 1; padding: 7px 10px; border-radius: 8px; border: 1px solid #e2e2e2; font-size: 13px; }
 .content-draft-error { color: #b91c1c; font-size: 13px; }
-.content-draft-textarea { width: 100%; font-family: inherit; font-size: 13px; border: 1px solid #ddd; border-radius: 6px; padding: 10px; box-sizing: border-box; }
-.content-draft-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; gap: 12px; }
-.content-draft-source { font-size: 11px; color: #888; }
+.content-draft-textarea { width: 100%; font-family: inherit; font-size: 13px; line-height: 1.6; border: 1px solid #e2e2e2; border-radius: 10px; padding: 12px; box-sizing: border-box; color: #222; }
+.content-draft-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; gap: 12px; }
+.content-draft-source { font-size: 11px; color: #999; }
