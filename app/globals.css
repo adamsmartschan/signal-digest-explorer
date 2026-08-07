@@ -96,3 +96,14 @@ input[type="checkbox"] { cursor: pointer; }
 .map-drilldown table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .map-drilldown th, .map-drilldown td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #eee; }
 .map-drilldown th { color: #666; font-weight: 600; }
+
+.company-row:hover { background: #f7f7fb; }
+.company-row.selected { background: #eef2ff; }
+.company-sheet { margin-top: 12px; margin-bottom: 20px; border: 1px solid #e2e5ea; border-radius: 8px; padding: 16px; background: #fff; }
+.company-sheet-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+.company-sheet-meta { color: #666; font-size: 13px; font-weight: normal; }
+.company-sheet-clear { border: 1px solid #ddd; background: #fff; border-radius: 6px; padding: 4px 10px; font-size: 12px; cursor: pointer; }
+.company-sheet-clear:hover { background: #f4f4f4; }
+.company-sheet-section { margin-top: 16px; }
+.company-sheet-section-title { font-weight: 600; font-size: 13px; margin-bottom: 6px; color: #333; }
+.company-sheet-empty { color: #888; font-size: 13px; font-style: italic; }

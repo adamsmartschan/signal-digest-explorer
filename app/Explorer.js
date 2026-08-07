@@ -9,8 +9,10 @@ import {
   automotiveRecalls,
   naMedtechCompanies,
   euMedtechCompanies,
+  groupIdForCompanyName,
 } from "../lib/staticData";
 import EuropeMap from "./EuropeMap";
+import CompanySheet from "./CompanySheet";
 
 const CAP = 15;
 // "Reasonable dates" window: show everything within this range rather than
@@ -129,6 +131,7 @@ function stripHtmlText(col, row) {
 export default function Explorer({ data }) {
   const [activeTab, setActiveTab] = useState("automotive");
   const [selectedSiteId, setSelectedSiteId] = useState(null);
+  const [selectedGroupId, setSelectedGroupId] = useState(null);
   const [selected, setSelected] = useState({}); // { rowKey: { section, columns, row } }
 
   const toggle = (sectionId, rowKey, columns, row) => {
@@ -184,6 +187,28 @@ export default function Explorer({ data }) {
   const naRecallRows = data.fdaRecalls.rows || [];
   const na510kRows = data.fda510k.us || [];
   const eu510kRows = data.fda510k.eu || [];
+
+  const selectedGroup = selectedGroupId
+    ? automotiveGroups.find((g) => g.id === selectedGroupId)
+    : null;
+  const groupPeople = selectedGroupId
+    ? (data.automotivePeople || [])
+        .filter((p) => p.groupId === selectedGroupId)
+        .slice()
+        .sort((a, b) => a.name.localeCompare(b.name))
+    : [];
+  const groupNews = selectedGroupId
+    ? automotiveNews.filter((n) => n.groupId === selectedGroupId)
+    : [];
+  const groupRecalls = selectedGroupId
+    ? automotiveRecalls.filter((r) => r.groupId === selectedGroupId)
+    : [];
+  const groupPromoRows = selectedGroupId
+    ? autoPromoRows.filter((r) => groupIdForCompanyName(r.Company) === selectedGroupId)
+    : [];
+  const groupJobRows = selectedGroupId
+    ? autoJobRows.filter((r) => groupIdForCompanyName(r["Company Name"]) === selectedGroupId)
+    : [];
 
   const hireColumns = [
     { key: "Name", label: "Name" },
@@ -336,14 +361,19 @@ export default function Explorer({ data }) {
 <InsightBanner insight={data.insights?.[activeTab]} />
       {activeTab === "automotive" && (
         <div>
-          <Section id="Companies" title="Target Groups" meta={`${automotiveGroups.length} groups`}>
+          <Section id="Companies" title="Target Groups" meta={`${automotiveGroups.length} groups -- click a row for the full company sheet`}>
             <table>
               <thead>
                 <tr><th style={{width:28}}></th><th>Group</th><th>Parent</th><th>Brands</th><th>Domain</th><th>EU/UK Plants</th></tr>
               </thead>
               <tbody>
                 {automotiveGroups.map((g, i) => (
-                  <tr key={i}>
+                  <tr
+                    key={i}
+                    className={"company-row" + (selectedGroupId === g.id ? " selected" : "")}
+                    style={{ cursor: "pointer" }}
+                    onClick={() => setSelectedGroupId(selectedGroupId === g.id ? null : g.id)}
+                  >
                     <td></td>
                     <td>{g.name}</td>
                     <td>{g.parent}</td>
@@ -355,6 +385,18 @@ export default function Explorer({ data }) {
               </tbody>
             </table>
           </Section>
+
+          {selectedGroup && (
+            <CompanySheet
+              group={selectedGroup}
+              people={groupPeople}
+              news={groupNews}
+              recalls={groupRecalls}
+              promoRows={groupPromoRows}
+              jobRows={groupJobRows}
+              onClose={() => setSelectedGroupId(null)}
+            />
+          )}
 
           <Section
             id="Map"
