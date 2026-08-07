@@ -9,7 +9,6 @@ import {
   automotiveRecalls,
   naMedtechCompanies,
   euMedtechCompanies,
-  locateHire,
 } from "../lib/staticData";
 import EuropeMap from "./EuropeMap";
 
@@ -129,6 +128,7 @@ function stripHtmlText(col, row) {
 
 export default function Explorer({ data }) {
   const [activeTab, setActiveTab] = useState("automotive");
+  const [selectedSiteId, setSelectedSiteId] = useState(null);
   const [selected, setSelected] = useState({}); // { rowKey: { section, columns, row } }
 
   const toggle = (sectionId, rowKey, columns, row) => {
@@ -184,11 +184,6 @@ export default function Explorer({ data }) {
   const naRecallRows = data.fdaRecalls.rows || [];
   const na510kRows = data.fda510k.us || [];
   const eu510kRows = data.fda510k.eu || [];
-
-  const automotiveHiresWithCoords = automotiveHires.map((h) => ({
-    ...h,
-    coords: locateHire(h, automotiveGroups),
-  }));
 
   const hireColumns = [
     { key: "Name", label: "Name" },
@@ -361,8 +356,18 @@ export default function Explorer({ data }) {
             </table>
           </Section>
 
-          <Section id="Map" title="EU/UK Manufacturing Footprint" meta="what's happening where">
-            <EuropeMap groups={automotiveGroups} hires={automotiveHiresWithCoords} />
+          <Section
+            id="Map"
+            title="EU/UK Manufacturing Footprint"
+            meta={`${(data.automotivePeople || []).filter((p) => p.siteId && p.siteId !== "unmapped").length} people mapped to plants`}
+            note={data.automotivePeopleError || null}
+          >
+            <EuropeMap
+              groups={automotiveGroups}
+              people={data.automotivePeople || []}
+              selectedSiteId={selectedSiteId}
+              onSelectSite={setSelectedSiteId}
+            />
           </Section>
 
           <Section id="News" title="Industry & Competitor News" meta={`${automotiveNews.length} items`}>

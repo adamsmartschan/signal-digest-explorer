@@ -73,7 +73,17 @@ input[type="checkbox"] { cursor: pointer; }
 .map-country { fill: #f7f9fc; stroke: #c5ced9; stroke-width: 0.8; }
 .map-country-label { font-size: 11px; fill: #9aa1ad; text-transform: uppercase; letter-spacing: 0.05em; pointer-events: none; }
 .map-pin-label { font-size: 10px; fill: #2a2a3a; pointer-events: none; }
-.map-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; font-size: 12px; color: #444; }
+.map-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; font-size: 12px; color: #444; align-items: center; }
 .map-legend-item { display: flex; align-items: center; gap: 6px; }
+.map-legend-hint { color: #888; font-style: italic; }
 .map-legend-swatch { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-.map-legend-swatch-hire { border-radius: 0; background: #fff; border: 2px solid #333; transform: rotate(45deg); }
+.map-drilldown { margin-top: 14px; border: 1px solid #e2e5ea; border-radius: 8px; padding: 12px 14px; background: #fff; }
+.map-drilldown-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px; }
+.map-drilldown-meta { color: #666; font-weight: 400; font-size: 13px; }
+.map-drilldown-note { font-size: 12px; color: #666; margin: 0 0 10px; line-height: 1.45; }
+.map-drilldown-empty { font-size: 13px; color: #888; margin: 0; }
+.map-drilldown-clear { font-size: 12px; border: 1px solid #ddd; background: #f7f7f7; border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+.map-drilldown-clear:hover { background: #eee; }
+.map-drilldown table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.map-drilldown th, .map-drilldown td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #eee; }
+.map-drilldown th { color: #666; font-weight: 600; }

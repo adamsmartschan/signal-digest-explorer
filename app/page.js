@@ -1,4 +1,9 @@
-import { fetchSheet } from "../lib/sheets";
+import {
+  fetchSheet,
+  fetchSheetByGid,
+  normalizeAutomotivePeople,
+  AUTOMOTIVE_PEOPLE_GID,
+} from "../lib/sheets";
 import { fetch510k, fetchRecalls, EU_COUNTRY_CODES } from "../lib/openfda";
 import { generateInsight } from "../lib/insights";
 import {
@@ -6,6 +11,7 @@ import {
   automotiveNews,
   automotiveRecalls,
 } from "../lib/staticData";
+import { automotivePeople as automotivePeopleFallback } from "../lib/automotivePeople";
 import Explorer from "./Explorer";
 
 export const dynamic = "force-dynamic"; // always fetch fresh data, no caching
@@ -33,6 +39,7 @@ export default async function Page() {
     promoAuto,
     fda510k,
     fdaRecalls,
+    automotivePeopleSheet,
   ] = await Promise.all([
     fetchSheet("New Hire: MD-NA"),
     fetchSheet("New Hire: MD-EU"),
@@ -44,7 +51,20 @@ export default async function Page() {
     fetchSheet("Promo: Automotive"),
     fetch510k(),
     fetchRecalls(),
+    fetchSheetByGid(AUTOMOTIVE_PEOPLE_GID, "Automotive people-site-mapping"),
   ]);
+
+  // Prefer the Google Sheet (canonical). Fall back to the checked-in snapshot
+  // if the tab isn't publicly readable or returns empty.
+  const sheetPeople = normalizeAutomotivePeople(automotivePeopleSheet.rows);
+  const automotivePeople =
+    sheetPeople.length > 0 ? sheetPeople : automotivePeopleFallback;
+  const automotivePeopleError =
+    sheetPeople.length > 0
+      ? null
+      : automotivePeopleSheet.error
+        ? `${automotivePeopleSheet.error} — using bundled snapshot`
+        : null;
 
   const data = {
     generatedAt: new Date().toISOString(),
@@ -58,6 +78,8 @@ export default async function Page() {
     promoAuto,
     fda510k,
     fdaRecalls,
+    automotivePeople,
+    automotivePeopleError,
   };
 
   // Lightweight flattened item lists per vertical, just for insight
