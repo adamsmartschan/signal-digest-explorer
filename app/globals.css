@@ -6,129 +6,108 @@ body {
   background: #ffffff;
   color: #111111;
 }
-.wrap { padding: 20px 24px 80px; max-width: 1100px; margin: 0 auto; }
-h1 { font-size: 18px; margin: 0 0 4px; }
-.subtitle { font-size: 13px; color: #666666; margin: 0 0 4px; }
-.generated { font-size: 11px; color: #999999; margin: 0 0 20px; }
-.tabs { display: flex; gap: 4px; border-bottom: 1px solid #e5e5e5; margin-bottom: 20px; }
-.tab {
-  padding: 8px 16px; font-size: 13px; font-weight: 600; color: #666666;
-  cursor: pointer; border-bottom: 2px solid transparent; user-select: none;
-  background: none; border-top: none; border-left: none; border-right: none;
-}
-.tab.active { color: #1a73e8; border-bottom-color: #1a73e8; }
-.section { margin-bottom: 28px; }
-.section-header {
-  display: flex; align-items: center; justify-content: space-between;
-  border-bottom: 1px solid #e5e5e5; padding-bottom: 6px; margin-bottom: 10px;
-}
-.section-title { font-size: 15px; font-weight: 700; }
-.section-meta { font-size: 12px; color: #666666; }
+.wrap { padding: 24px 24px 90px; max-width: 1100px; margin: 0 auto; }
+h1 { font-size: 20px; font-weight: 500; margin: 0 0 4px; color: #111111; }
+.subtitle { font-size: 13px; color: #888888; margin: 0 0 4px; }
+.generated { font-size: 11px; color: #bbbbbb; margin: 0 0 24px; }
+
+/* Tabs -- pill/segmented control instead of underlined blue links */
+.tabs { display: inline-flex; gap: 2px; background: #f4f4f5; padding: 4px; border-radius: 12px; margin-bottom: 24px; }
+.tab { padding: 7px 16px; font-size: 13px; font-weight: 500; color: #666666; border-radius: 9px; border: none; background: none; cursor: pointer; user-select: none; }
+.tab:hover { color: #111111; }
+.tab.active { background: #ffffff; color: #111111; }
+
+/* Section headers -- no divider line, quieter meta text */
+.section { margin-bottom: 32px; }
+.section-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 14px; }
+.section-title { font-size: 14px; font-weight: 500; color: #1a1a1a; }
+.section-meta { font-size: 12px; color: #999999; }
+
+/* Tables -- same clean look everywhere in the app, not just the company sheet */
 table { width: 100%; border-collapse: collapse; font-size: 13px; }
-th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
-th { font-size: 11px; color: #666666; font-weight: 600; text-transform: uppercase; letter-spacing: 0.02em; }
+th, td { text-align: left; padding: 8px; border-bottom: 1px solid #f3f3f3; vertical-align: top; }
+th { font-size: 11px; color: #999999; font-weight: 500; text-transform: uppercase; letter-spacing: 0.03em; }
 tr:hover { background: #fafafa; }
-.badge {
-  display: inline-block; background: #e6f4ea; color: #137333;
-  padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; white-space: nowrap;
-}
-.badge.amber { background: #fff3e0; color: #854f0b; }
-.empty-state { font-size: 13px; color: #666666; font-style: italic; padding: 8px 0; }
-.error-state { font-size: 13px; color: #b3261e; padding: 8px 0; }
-.placeholder-note {
-  font-size: 12px; color: #8a5a00; background: #fff8e1; border: 1px solid #ffe0a3;
-  border-radius: 6px; padding: 8px 12px; margin-bottom: 10px;
-}
-a { color: #1a73e8; text-decoration: none; }
+tr:last-child td { border-bottom: none; }
+/* kept as an alias so any explicit sheet-table markup still matches -- table already covers it */
+.sheet-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.sheet-table th { text-align: left; font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: #999999; padding: 8px; border-bottom: 1px solid #f3f3f3; }
+.sheet-table td { padding: 8px; border-bottom: 1px solid #f3f3f3; color: #333333; }
+.sheet-table tr:last-child td { border-bottom: none; }
+
+.badge { display: inline-block; background: #f4f4f5; color: #444444; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 500; white-space: nowrap; }
+.badge.amber { background: #fef3e2; color: #92400e; }
+
+.empty-state { font-size: 13px; color: #999999; font-style: italic; padding: 8px 0; }
+.error-state { font-size: 13px; color: #b91c1c; padding: 8px 0; }
+.placeholder-note { font-size: 12px; color: #92400e; background: #fef3e2; border: none; border-radius: 8px; padding: 8px 12px; margin-bottom: 10px; }
+
+a { color: #3b5bdb; text-decoration: none; }
 a:hover { text-decoration: underline; }
-.export-bar {
-  position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff;
-  border-top: 1px solid #e5e5e5; padding: 12px 24px; display: flex; align-items: center;
-  justify-content: space-between; box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
-}
-.export-count { font-size: 13px; color: #666666; }
-button {
-  font-family: inherit; font-size: 13px; font-weight: 600; padding: 8px 16px;
-  border-radius: 6px; border: none; cursor: pointer;
-}
-.btn-primary { background: #1a73e8; color: #ffffff; }
-.btn-primary:disabled { background: #c9c9c9; cursor: not-allowed; }
-.btn-secondary { background: none; color: #1a73e8; font-weight: 600; }
+
+.export-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; border-top: 1px solid #eeeeee; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+.export-count { font-size: 13px; color: #888888; }
+
+button { font-family: inherit; font-size: 13px; font-weight: 500; padding: 8px 16px; border-radius: 10px; border: 1px solid transparent; cursor: pointer; }
+.btn-primary { background: #111827; color: #ffffff; }
+.btn-primary:hover { background: #000000; }
+.btn-primary:disabled { background: #d4d4d8; color: #888888; cursor: not-allowed; }
+.btn-secondary { background: none; border: 1px solid #e2e2e2; color: #333333; }
+.btn-secondary:hover { background: #f7f7f7; }
 input[type="checkbox"] { cursor: pointer; }
 
-/* --- Insight banner (append to end of globals.css) --- */
-.insight-banner {
-  display: flex; gap: 12px; align-items: flex-start;
-  background: linear-gradient(135deg, #f3e8fd 0%, #e8f0fe 100%);
-  border: 1px solid #e3d7fb; border-radius: 12px;
-  padding: 14px 16px; margin-bottom: 20px;
-}
-.insight-icon { font-size: 18px; line-height: 1.4; }
-.insight-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: #5b21b6; margin-bottom: 3px; }
-.insight-text { font-size: 13px; line-height: 1.5; color: #2a2a3a; }
+/* Insight banner -- flat tint instead of a gradient, icon instead of emoji */
+.insight-banner { display: flex; gap: 12px; align-items: flex-start; background: #f5f3ff; border-radius: 12px; padding: 14px 16px; margin-bottom: 20px; }
+.insight-icon { color: #7c3aed; flex-shrink: 0; margin-top: 1px; }
+.insight-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; color: #7c3aed; margin-bottom: 3px; }
+.insight-text { font-size: 13px; line-height: 1.5; color: #333333; }
 
-/* --- EU/UK manufacturing map (append to end of globals.css) --- */
+/* EU/UK manufacturing map */
 .europe-map { margin-bottom: 20px; }
-.europe-map-frame {
-  max-width: 520px;
-  height: 280px;
-  border: 1px solid #e2e5ea;
-  border-radius: 8px;
-  background: #e8eef6;
-  overflow: hidden;
-}
+.europe-map-frame { max-width: 520px; height: 280px; border: 1px solid #e2e5ea; border-radius: 12px; background: #e8eef6; overflow: hidden; }
 .europe-map svg { width: 100%; height: 100%; display: block; }
 .map-country { fill: #f7f9fc; stroke: #c5ced9; stroke-width: 0.8; }
 .map-country-label { font-size: 11px; fill: #9aa1ad; text-transform: uppercase; letter-spacing: 0.05em; pointer-events: none; }
 .map-pin-label { font-size: 10px; fill: #2a2a3a; pointer-events: none; }
 .map-pin-leader { stroke: #8a93a3; stroke-width: 0.8; pointer-events: none; }
-.map-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; font-size: 12px; color: #444; align-items: center; }
+.map-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; font-size: 12px; color: #444444; align-items: center; }
 .map-legend-item { display: flex; align-items: center; gap: 6px; }
-.map-legend-hint { color: #888; font-style: italic; }
+.map-legend-hint { color: #999999; font-style: italic; }
 .map-legend-swatch { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-.map-drilldown { margin-top: 14px; border: 1px solid #e2e5ea; border-radius: 8px; padding: 12px 14px; background: #fff; }
+.map-drilldown { margin-top: 14px; border: 1px solid #ececec; border-radius: 12px; padding: 14px 16px; background: #ffffff; }
 .map-drilldown-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px; }
-.map-drilldown-meta { color: #666; font-weight: 400; font-size: 13px; }
-.map-drilldown-note { font-size: 12px; color: #666; margin: 0 0 10px; line-height: 1.45; }
-.map-drilldown-empty { font-size: 13px; color: #888; margin: 0; }
-.map-drilldown-clear { font-size: 12px; border: 1px solid #ddd; background: #f7f7f7; border-radius: 6px; padding: 4px 10px; cursor: pointer; }
-.map-drilldown-clear:hover { background: #eee; }
-.map-drilldown table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.map-drilldown th, .map-drilldown td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #eee; }
-.map-drilldown th { color: #666; font-weight: 600; }
+.map-drilldown-meta { color: #888888; font-weight: 400; font-size: 13px; }
+.map-drilldown-note { font-size: 12px; color: #888888; margin: 0 0 10px; line-height: 1.45; }
+.map-drilldown-empty { font-size: 13px; color: #999999; margin: 0; }
+.map-drilldown-clear { font-size: 12px; border: none; background: transparent; border-radius: 8px; padding: 5px 10px; cursor: pointer; color: #444444; }
+.map-drilldown-clear:hover { background: #f2f2f2; }
 
-/* --- UI refresh: replaces the earlier company-row / company-sheet /
-   content-draft-* blocks in globals.css with a cleaner look. If you added
-   those blocks from the previous two patches, delete them and paste this
-   in instead -- same class names throughout, just restyled, so nothing
-   else needs to change. --- */
-
+/* Company sheet */
 .company-row:hover { background: #f7f7fb; }
 .company-row.selected { background: #eef2ff; }
-
-.company-sheet { margin-top: 12px; margin-bottom: 24px; border: 1px solid #ececec; border-radius: 16px; padding: 20px 24px; background: #fff; }
+.company-sheet { margin-top: 12px; margin-bottom: 24px; border: 1px solid #ececec; border-radius: 16px; padding: 20px 24px; background: #ffffff; }
 .company-sheet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
 .company-sheet-title { display: flex; align-items: center; gap: 10px; font-size: 16px; }
 .company-sheet-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-.company-sheet-meta { color: #888; font-size: 13px; font-weight: normal; }
+.company-sheet-meta { color: #888888; font-size: 13px; font-weight: normal; }
 .company-sheet-section { margin-top: 22px; }
-.company-sheet-section-title { font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 10px; color: #999; }
-.company-sheet-empty { color: #999; font-size: 13px; font-style: italic; }
+.company-sheet-section-title { font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 10px; color: #999999; }
+.company-sheet-empty { color: #999999; font-size: 13px; font-style: italic; }
 
-/* Buttons */
-.ghost-btn { display: inline-flex; align-items: center; gap: 6px; border: none; background: transparent; color: #444; font-size: 13px; padding: 5px 8px; border-radius: 8px; cursor: pointer; }
+/* Shared buttons used across the company sheet and content draft modal */
+.ghost-btn { display: inline-flex; align-items: center; gap: 6px; border: none; background: transparent; color: #444444; font-size: 13px; padding: 5px 8px; border-radius: 8px; cursor: pointer; }
 .ghost-btn:hover { background: #f2f2f2; }
 .ghost-btn:disabled { opacity: 0.5; cursor: default; }
-.icon-btn { display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border: none; background: transparent; border-radius: 50%; color: #666; cursor: pointer; }
+.icon-btn { display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border: none; background: transparent; border-radius: 50%; color: #666666; cursor: pointer; }
 .icon-btn:hover { background: #f2f2f2; }
-.pill-btn { display: inline-flex; align-items: center; gap: 6px; border: 1px solid #e2e2e2; background: #fff; color: #333; font-size: 13px; padding: 6px 14px; border-radius: 999px; cursor: pointer; }
+.pill-btn { display: inline-flex; align-items: center; gap: 6px; border: 1px solid #e2e2e2; background: #ffffff; color: #333333; font-size: 13px; padding: 6px 14px; border-radius: 999px; cursor: pointer; }
 .pill-btn:hover { background: #f7f7f7; }
 
 /* Plants */
 .plant-list { display: flex; flex-direction: column; gap: 8px; }
-.plant-card { display: flex; gap: 12px; align-items: flex-start; background: #fafafa; border-radius: 10px; padding: 12px 14px; color: #666; }
-.plant-card-title { font-size: 13px; font-weight: 500; color: #222; }
-.plant-card-note { font-size: 12px; color: #888; margin-top: 2px; line-height: 1.5; }
+.plant-card { display: flex; gap: 12px; align-items: flex-start; background: #fafafa; border-radius: 10px; padding: 12px 14px; color: #666666; }
+.plant-card-title { font-size: 13px; font-weight: 500; color: #222222; }
+.plant-card-note { font-size: 12px; color: #888888; margin-top: 2px; line-height: 1.5; }
 
 /* People */
 .person-list { display: flex; flex-direction: column; }
@@ -137,23 +116,17 @@ input[type="checkbox"] { cursor: pointer; }
 .person-avatar { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; flex-shrink: 0; }
 .person-info { flex: 1; min-width: 0; }
 .person-name { font-size: 13px; font-weight: 500; color: #1a1a1a; }
-.person-title { font-size: 12px; color: #888; }
+.person-title { font-size: 12px; color: #888888; }
 .pill { font-size: 11px; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
-
-/* Generic tables inside the sheet (News, Recalls, Promotions, Open Roles) */
-.sheet-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.sheet-table th { text-align: left; font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: #999; padding: 6px 8px; border-bottom: 1px solid #eee; }
-.sheet-table td { padding: 8px; border-bottom: 1px solid #f3f3f3; color: #333; }
-.sheet-table tr:last-child td { border-bottom: none; }
 
 /* Content draft modal */
 .content-draft-overlay { position: fixed; inset: 0; background: rgba(20,20,20,0.4); display: flex; align-items: center; justify-content: center; z-index: 50; }
-.content-draft-modal { background: #fff; border-radius: 16px; padding: 22px; width: 480px; max-width: 90vw; max-height: 85vh; overflow-y: auto; }
+.content-draft-modal { background: #ffffff; border-radius: 16px; padding: 22px; width: 480px; max-width: 90vw; max-height: 85vh; overflow-y: auto; }
 .content-draft-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
 .content-draft-title { font-size: 14px; font-weight: 500; }
 .content-draft-controls { display: flex; gap: 8px; margin-bottom: 12px; }
 .content-draft-controls select { flex: 1; padding: 7px 10px; border-radius: 8px; border: 1px solid #e2e2e2; font-size: 13px; }
 .content-draft-error { color: #b91c1c; font-size: 13px; }
-.content-draft-textarea { width: 100%; font-family: inherit; font-size: 13px; line-height: 1.6; border: 1px solid #e2e2e2; border-radius: 10px; padding: 12px; box-sizing: border-box; color: #222; }
+.content-draft-textarea { width: 100%; font-family: inherit; font-size: 13px; line-height: 1.6; border: 1px solid #e2e2e2; border-radius: 10px; padding: 12px; box-sizing: border-box; color: #222222; }
 .content-draft-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; gap: 12px; }
-.content-draft-source { font-size: 11px; color: #999; }
+.content-draft-source { font-size: 11px; color: #999999; }

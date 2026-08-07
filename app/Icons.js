@@ -4,17 +4,19 @@
 // -- one less thing that can break a Vercel build). Outline style, 18px
 // default, inherits currentColor.
 
-function base(props) {
+function base({ size = 18, className, ...rest }) {
   return {
-    width: props.size || 18,
-    height: props.size || 18,
+    width: size,
+    height: size,
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",
     strokeWidth: 1.75,
     strokeLinecap: "round",
     strokeLinejoin: "round",
+    className,
     "aria-hidden": true,
+    ...rest,
   };
 }
 
@@ -59,6 +61,16 @@ export function IconRefresh(props) {
     <svg {...base(props)}>
       <path d="M21 12a9 9 0 1 1-3-6.7" />
       <path d="M21 4v5h-5" />
+    </svg>
+  );
+}
+
+export function IconBulb(props) {
+  return (
+    <svg {...base(props)}>
+      <path d="M9 18h6" />
+      <path d="M10 21h4" />
+      <path d="M12 3a6 6 0 0 0-3.5 10.9c.6.45 1 1.2 1 2.1h5c0-.9.4-1.65 1-2.1A6 6 0 0 0 12 3z" />
     </svg>
   );
 }

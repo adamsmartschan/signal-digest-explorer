@@ -13,6 +13,7 @@ import {
 } from "../lib/staticData";
 import EuropeMap from "./EuropeMap";
 import CompanySheet from "./CompanySheet";
+import { IconBulb } from "./Icons";
 
 const CAP = 15;
 // "Reasonable dates" window: show everything within this range rather than
@@ -43,7 +44,7 @@ function InsightBanner({ insight }) {
   if (!insight) return null;
   return (
     <div className="insight-banner">
-      <span className="insight-icon">💡</span>
+      <IconBulb size={18} className="insight-icon" />
       <div>
         <div className="insight-label">Insight</div>
         <div className="insight-text">{insight.text}</div>
