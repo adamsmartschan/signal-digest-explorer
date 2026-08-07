@@ -30,6 +30,70 @@ const COUNTRY_LABELS = [
   { label: "Italy", lat: 42.5, lon: 12.5 },
 ];
 
+/**
+ * Display nudges + label placement for plants that sit on top of each other
+ * at overview zoom (KTM Austria pair; Piaggio Veneto/Lombardy cluster).
+ * Coordinates stay true in the tooltip; only the drawn pin/label move.
+ */
+const SITE_LAYOUT = {
+  "ktm-mattighofen": {
+    pinDx: 0,
+    pinDy: 10,
+    labelDx: -16,
+    labelDy: 4,
+    anchor: "end",
+  },
+  "ktm-munderfing": {
+    pinDx: 0,
+    pinDy: -12,
+    labelDx: 14,
+    labelDy: -2,
+    anchor: "start",
+  },
+  "piaggio-scorze": {
+    pinDx: 10,
+    pinDy: 12,
+    labelDx: 14,
+    labelDy: 16,
+    anchor: "start",
+  },
+  "piaggio-noale": {
+    pinDx: -8,
+    pinDy: -14,
+    labelDx: -14,
+    labelDy: -12,
+    anchor: "end",
+  },
+  "piaggio-mandello": {
+    pinDx: -16,
+    pinDy: 2,
+    labelDx: -14,
+    labelDy: 4,
+    anchor: "end",
+  },
+  "piaggio-pontedera": {
+    pinDx: 0,
+    pinDy: 0,
+    labelDx: 12,
+    labelDy: 4,
+    anchor: "start",
+  },
+  "ducati-borgopanigale": {
+    pinDx: 0,
+    pinDy: 0,
+    labelDx: 12,
+    labelDy: 4,
+    anchor: "start",
+  },
+  "bmw-berlin": {
+    pinDx: 0,
+    pinDy: 0,
+    labelDx: 12,
+    labelDy: 4,
+    anchor: "start",
+  },
+};
+
 /** Zoom viewBox to data points with padding; fall back to full map. */
 function viewBoxForPoints(points) {
   if (!points.length) return `0 0 ${W} ${H}`;
@@ -45,15 +109,17 @@ function viewBoxForPoints(points) {
     if (y > maxY) maxY = y;
   }
 
-  const padX = Math.max((maxX - minX) * 0.28, 48);
-  const padY = Math.max((maxY - minY) * 0.28, 48);
+  // Extra room for callout labels around tight clusters
+  const padX = Math.max((maxX - minX) * 0.35, 70);
+  const padY = Math.max((maxY - minY) * 0.35, 70);
   minX = Math.max(0, minX - padX);
   minY = Math.max(0, minY - padY);
   maxX = Math.min(W, maxX + padX);
   maxY = Math.min(H, maxY + padY);
 
-  const minSpanX = W * 0.35;
-  const minSpanY = H * 0.35;
+  // Don't over-zoom — keep Austria and N. Italy clusters separable
+  const minSpanX = W * 0.48;
+  const minSpanY = H * 0.48;
   let spanX = maxX - minX;
   let spanY = maxY - minY;
   if (spanX < minSpanX) {
@@ -97,6 +163,18 @@ function findSite(groups, siteId) {
   return null;
 }
 
+function layoutFor(siteId) {
+  return (
+    SITE_LAYOUT[siteId] || {
+      pinDx: 0,
+      pinDy: 0,
+      labelDx: 12,
+      labelDy: 4,
+      anchor: "start",
+    }
+  );
+}
+
 export default function EuropeMap({
   groups,
   people = [],
@@ -127,69 +205,105 @@ export default function EuropeMap({
 
   return (
     <div className="europe-map">
-      <svg
-        viewBox={viewBox}
-        width="100%"
-        height="auto"
-        role="img"
-        aria-label="EU/UK manufacturing locations map. Click a plant for people at that site."
-      >
-        <rect x="0" y="0" width={W} height={H} fill="#e8eef6" />
+      <div className="europe-map-frame">
+        <svg
+          viewBox={viewBox}
+          width="100%"
+          height="100%"
+          preserveAspectRatio="xMidYMid meet"
+          role="img"
+          aria-label="EU/UK manufacturing locations map. Click a plant for people at that site."
+        >
+          <rect x="0" y="0" width={W} height={H} fill="#e8eef6" />
 
-        <g className="map-basemap">
-          {EUROPE_COUNTRY_PATHS.map((c) => (
-            <path key={c.name} d={c.d} className="map-country">
-              <title>{c.name}</title>
-            </path>
-          ))}
-        </g>
+          <g className="map-basemap">
+            {EUROPE_COUNTRY_PATHS.map((c) => (
+              <path key={c.name} d={c.d} className="map-country">
+                <title>{c.name}</title>
+              </path>
+            ))}
+          </g>
 
-        {COUNTRY_LABELS.map((c) => {
-          const [x, y] = project(c.lat, c.lon);
-          return (
-            <text key={c.label} x={x} y={y} className="map-country-label">
-              {c.label}
-            </text>
-          );
-        })}
-
-        {groups.flatMap((g) =>
-          g.manufacturingLocations.map((loc, idx) => {
-            const [x, y] = project(loc.lat, loc.lon);
-            const isPrimary = idx === 0;
-            const isSelected = selectedSiteId === loc.siteId;
-            const n = counts[loc.siteId] || 0;
-            const r = isSelected ? 11 : isPrimary ? 8 : 6;
+          {COUNTRY_LABELS.map((c) => {
+            const [x, y] = project(c.lat, c.lon);
             return (
-              <g
-                key={loc.siteId || `${g.id}-${loc.city}`}
-                className={"map-pin" + (isSelected ? " selected" : "")}
-                style={{ cursor: "pointer" }}
-                onClick={() =>
-                  onSelectSite?.(
-                    selectedSiteId === loc.siteId ? null : loc.siteId
-                  )
-                }
-              >
-                <circle
-                  cx={x}
-                  cy={y}
-                  r={r}
-                  fill={GROUP_COLORS[g.id] || "#666"}
-                  stroke={isSelected ? "#111" : "#fff"}
-                  strokeWidth={isSelected ? 2.5 : 1.5}
-                >
-                  <title>{`${g.name} — ${loc.name} (${loc.city})\n${n} people mapped · click to view`}</title>
-                </circle>
-                <text x={x + 12} y={y + 4} className="map-pin-label">
-                  {loc.city}
-                  {n > 0 ? ` (${n})` : ""}
-                </text>
-              </g>
+              <text key={c.label} x={x} y={y} className="map-country-label">
+                {c.label}
+              </text>
             );
-          })
-        )}
-      </svg>
+          })}
+
+          {groups.flatMap((g) =>
+            g.manufacturingLocations.map((loc, idx) => {
+              const [geoX, geoY] = project(loc.lat, loc.lon);
+              const layout = layoutFor(loc.siteId);
+              const x = geoX + layout.pinDx;
+              const y = geoY + layout.pinDy;
+              const labelX = x + layout.labelDx;
+              const labelY = y + layout.labelDy;
+              const isPrimary = idx === 0;
+              const isSelected = selectedSiteId === loc.siteId;
+              const n = counts[loc.siteId] || 0;
+              const r = isSelected ? 10 : isPrimary ? 7 : 6;
+              const needsLeader =
+                Math.abs(layout.labelDx) > 10 || Math.abs(layout.labelDy) > 8;
+
+              return (
+                <g
+                  key={loc.siteId || `${g.id}-${loc.city}`}
+                  className={"map-pin" + (isSelected ? " selected" : "")}
+                  style={{ cursor: "pointer" }}
+                  onClick={() =>
+                    onSelectSite?.(
+                      selectedSiteId === loc.siteId ? null : loc.siteId
+                    )
+                  }
+                >
+                  {needsLeader ? (
+                    <line
+                      x1={x}
+                      y1={y}
+                      x2={labelX}
+                      y2={labelY - 2}
+                      className="map-pin-leader"
+                    />
+                  ) : null}
+                  {/* True geo point when pin is nudged */}
+                  {(layout.pinDx || layout.pinDy) ? (
+                    <circle
+                      cx={geoX}
+                      cy={geoY}
+                      r="2"
+                      fill={GROUP_COLORS[g.id] || "#666"}
+                      opacity="0.35"
+                      pointerEvents="none"
+                    />
+                  ) : null}
+                  <circle
+                    cx={x}
+                    cy={y}
+                    r={r}
+                    fill={GROUP_COLORS[g.id] || "#666"}
+                    stroke={isSelected ? "#111" : "#fff"}
+                    strokeWidth={isSelected ? 2.5 : 1.5}
+                  >
+                    <title>{`${g.name} — ${loc.name} (${loc.city})\n${n} people mapped · click to view`}</title>
+                  </circle>
+                  <text
+                    x={labelX}
+                    y={labelY}
+                    textAnchor={layout.anchor}
+                    className="map-pin-label"
+                  >
+                    {loc.city}
+                    {n > 0 ? ` (${n})` : ""}
+                  </text>
+                </g>
+              );
+            })
+          )}
+        </svg>
+      </div>
 
       <div className="map-legend">
         {groups.map((g) => (
@@ -210,9 +324,7 @@ export default function EuropeMap({
         <div className="map-drilldown">
           <div className="map-drilldown-header">
             <div>
-              <strong>
-                {selected.loc.name}
-              </strong>
+              <strong>{selected.loc.name}</strong>
               <span className="map-drilldown-meta">
                 {" "}
                 · {selected.group.name} · {selected.loc.city},{" "}
