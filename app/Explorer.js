@@ -13,6 +13,7 @@ import {
 } from "../lib/staticData";
 import EuropeMap from "./EuropeMap";
 import CompanySheet from "./CompanySheet";
+import BranchPicker, { VERTICAL_LABELS } from "./BranchPicker";
 import { IconBulb } from "./Icons";
 
 const CAP = 15;
@@ -130,10 +131,17 @@ function stripHtmlText(col, row) {
 }
 
 export default function Explorer({ data }) {
-  const [activeTab, setActiveTab] = useState("automotive");
+  const [activeTab, setActiveTab] = useState(null);
   const [selectedSiteId, setSelectedSiteId] = useState(null);
   const [selectedGroupId, setSelectedGroupId] = useState(null);
   const [selected, setSelected] = useState({}); // { rowKey: { section, columns, row } }
+
+  const openVertical = (id) => {
+    setActiveTab(id);
+    setSelectedSiteId(null);
+    setSelectedGroupId(null);
+    setSelected({});
+  };
 
   const toggle = (sectionId, rowKey, columns, row) => {
     setSelected((prev) => {
@@ -334,32 +342,25 @@ export default function Explorer({ data }) {
     { key: "size", label: "Size" },
   ];
 
+  if (!activeTab) {
+    return <BranchPicker onSelect={openVertical} />;
+  }
+
   return (
     <div className="wrap">
-      <h1>Signal Digest Explorer</h1>
+      <div className="explorer-top">
+        <button type="button" className="ghost-btn explorer-back" onClick={() => openVertical(null)}>
+          All verticals
+        </button>
+      </div>
+      <h1>{VERTICAL_LABELS[activeTab] || "Signal Digest Explorer"}</h1>
       <p className="subtitle">
         Pick what you want, export just that. Hires, jobs, promotions pull live from the shared
         Google Sheet on every load; FDA sections pull live from openFDA.
       </p>
       <p className="generated">Data refreshed: {new Date(data.generatedAt).toLocaleString()}</p>
 
-      <div className="tabs">
-        {[
-          { id: "automotive", label: "Automotive" },
-          { id: "na-medtech", label: "NA MedTech (HID)" },
-          { id: "eu-medtech", label: "EU MedTech" },
-        ].map((t) => (
-          <button
-            key={t.id}
-            className={"tab" + (activeTab === t.id ? " active" : "")}
-            onClick={() => setActiveTab(t.id)}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
-
-<InsightBanner insight={data.insights?.[activeTab]} />
+      <InsightBanner insight={data.insights?.[activeTab]} />
       {activeTab === "automotive" && (
         <div>
           <Section id="Companies" title="Target Groups" meta={`${automotiveGroups.length} groups -- click a row for the full company sheet`}>

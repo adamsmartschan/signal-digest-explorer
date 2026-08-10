@@ -74,3 +74,34 @@ export function IconBulb(props) {
     </svg>
   );
 }
+
+export function IconMotorcycle(props) {
+  return (
+    <svg {...base(props)}>
+      <circle cx="6.5" cy="17" r="2.75" />
+      <circle cx="17.5" cy="17" r="2.75" />
+      <path d="M8.5 17h6.5l-1.8-6.2H9.8" />
+      <path d="M12.8 10.8L15.5 6h3.2" />
+      <path d="M4.5 12.5h3.2" />
+      <path d="M15.2 6h2.4c.7 0 1.2.4 1.4 1l.6 2" />
+    </svg>
+  );
+}
+
+export function IconHeartPulse(props) {
+  return (
+    <svg {...base(props)}>
+      <path d="M19.5 13.2C21 11.8 22.5 10 22.5 8a4.5 4.5 0 0 0-8.2-2.5L12 7.8l-2.3-2.3A4.5 4.5 0 0 0 1.5 8c0 2 1.5 3.8 3 5.2L12 21z" />
+      <path d="M4.8 12.5H8l1.4-2.2 2.2 4.4 1.4-2.2h3.4" />
+    </svg>
+  );
+}
+
+export function IconMedicalCross(props) {
+  return (
+    <svg {...base(props)}>
+      <rect x="9" y="3" width="6" height="18" rx="1.5" />
+      <rect x="3" y="9" width="18" height="6" rx="1.5" />
+    </svg>
+  );
+}
