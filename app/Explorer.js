@@ -14,6 +14,8 @@ import {
 import EuropeMap from "./EuropeMap";
 import CompanySheet from "./CompanySheet";
 import BranchPicker, { VERTICAL_LABELS } from "./BranchPicker";
+import GroupPills from "./GroupPills";
+import Watchlist from "./Watchlist";
 import { IconBulb } from "./Icons";
 
 const CAP = 15;
@@ -363,30 +365,11 @@ export default function Explorer({ data }) {
       <InsightBanner insight={data.insights?.[activeTab]} />
       {activeTab === "automotive" && (
         <div>
-          <Section id="Companies" title="Target Groups" meta={`${automotiveGroups.length} groups -- click a row for the full company sheet`}>
-            <table>
-              <thead>
-                <tr><th style={{width:28}}></th><th>Group</th><th>Parent</th><th>Brands</th><th>Domain</th><th>EU/UK Plants</th></tr>
-              </thead>
-              <tbody>
-                {automotiveGroups.map((g, i) => (
-                  <tr
-                    key={i}
-                    className={"company-row" + (selectedGroupId === g.id ? " selected" : "")}
-                    style={{ cursor: "pointer" }}
-                    onClick={() => setSelectedGroupId(selectedGroupId === g.id ? null : g.id)}
-                  >
-                    <td></td>
-                    <td>{g.name}</td>
-                    <td>{g.parent}</td>
-                    <td>{g.brands.join(", ")}</td>
-                    <td>{g.domain}</td>
-                    <td>{g.manufacturingLocations.length}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </Section>
+          <GroupPills
+            groups={automotiveGroups}
+            selectedId={selectedGroupId}
+            onSelect={setSelectedGroupId}
+          />
 
           {selectedGroup && (
             <CompanySheet
@@ -459,18 +442,8 @@ export default function Explorer({ data }) {
       )}
 
       {activeTab === "na-medtech" && (
-        <div>
-          <Section id="Companies" title="Target Companies" meta={`${naMedtechCompanies.length} companies (first page - more available)`}>
-            <table>
-              <thead><tr><th style={{width:28}}></th><th>Company</th><th>Domain</th><th>Country</th><th>Size</th></tr></thead>
-              <tbody>
-                {naMedtechCompanies.map((c, i) => (
-                  <tr key={i}><td></td><td>{c.company}</td><td>{c.domain}</td><td>{c.country}</td><td>{c.size}</td></tr>
-                ))}
-              </tbody>
-            </table>
-          </Section>
-
+        <div className="digest-layout">
+          <div className="digest-main">
           <Section id="Hires" title="New Hires at Target Accounts"
             meta={`${naHireRowsAll.length} US hires in the last ${DATE_WINDOW_DAYS} days (of ${data.newHireNA.rows?.length || 0} total rows)`}
             error={data.newHireNA.error}>
@@ -501,22 +474,18 @@ export default function Explorer({ data }) {
             error={data.fda510k.error}>
             <DataTable sectionId="na-510k" columns={fda510kColumns} rows={na510kRows} selected={selected} onToggle={toggle} />
           </Section>
+          </div>
+          <Watchlist
+            companies={naMedtechCompanies}
+            vertical="na-medtech"
+            verticalLabel="NA MedTech"
+          />
         </div>
       )}
 
       {activeTab === "eu-medtech" && (
-        <div>
-          <Section id="Companies" title="Target Companies" meta={`${euMedtechCompanies.length} companies`}>
-            <table>
-              <thead><tr><th style={{width:28}}></th><th>Company</th><th>Domain</th><th>Country</th><th>Size</th><th>Notes</th></tr></thead>
-              <tbody>
-                {euMedtechCompanies.map((c, i) => (
-                  <tr key={i}><td></td><td>{c.company}</td><td>{c.domain}</td><td>{c.country}</td><td>{c.size}</td><td>{c.notes}</td></tr>
-                ))}
-              </tbody>
-            </table>
-          </Section>
-
+        <div className="digest-layout">
+          <div className="digest-main">
           <Section id="510k" title="New FDA 510(k) Clearances — EU/UK Applicants"
             meta={`${eu510kRows.length} clearances, 120-day window`}
             note="Same underlying openFDA query as NA MedTech's 510(k) table, filtered to applicant countries DE/GB/IE/FR/IT/CH/SE/NL/DK/BE/AT/ES/FI/NO."
@@ -541,6 +510,12 @@ export default function Explorer({ data }) {
             error={data.jobsEU.error}>
             <DataTable sectionId="eu-jobs" columns={jobColumns} rows={euJobRows} selected={selected} onToggle={toggle} />
           </Section>
+          </div>
+          <Watchlist
+            companies={euMedtechCompanies}
+            vertical="eu-medtech"
+            verticalLabel="EU MedTech"
+          />
         </div>
       )}
 

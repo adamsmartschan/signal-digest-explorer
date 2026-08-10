@@ -6,7 +6,7 @@ body {
   background: #ffffff;
   color: #111111;
 }
-.wrap { padding: 24px 24px 90px; max-width: 1100px; margin: 0 auto; }
+.wrap { padding: 24px 24px 90px; max-width: 1180px; margin: 0 auto; }
 h1 { font-size: 20px; font-weight: 500; margin: 0 0 4px; color: #111111; }
 .subtitle { font-size: 13px; color: #888888; margin: 0 0 4px; }
 .generated { font-size: 11px; color: #bbbbbb; margin: 0 0 24px; }
@@ -152,3 +152,45 @@ input[type="checkbox"] { cursor: pointer; }
 .branch-meta { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: #999999; }
 .explorer-top { margin-bottom: 8px; }
 .explorer-back { padding-left: 0; color: #666666; font-size: 12px; }
+
+/* Digest + watchlist */
+.digest-layout { display: grid; grid-template-columns: minmax(0, 1fr) 240px; gap: 28px; align-items: start; }
+@media (max-width: 900px) {
+  .digest-layout { grid-template-columns: 1fr; }
+  .watchlist { order: 2; }
+}
+.watchlist { position: sticky; top: 16px; border: 1px solid #ececec; border-radius: 16px; padding: 16px 14px; background: #fff; }
+.watchlist-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.watchlist-title { font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; color: #999; }
+.watchlist-count { background: #f4f4f5; color: #444; }
+.watchlist-note { font-size: 12px; color: #888; line-height: 1.4; margin: 0 0 12px; }
+.watchlist-list { list-style: none; margin: 0; padding: 0; max-height: 52vh; overflow-y: auto; }
+.watchlist-item { padding: 8px 0; border-bottom: 1px solid #f3f3f3; }
+.watchlist-item:last-child { border-bottom: none; }
+.watchlist-name { font-size: 13px; font-weight: 500; color: #1a1a1a; }
+.watchlist-meta { font-size: 11px; color: #999; margin-top: 2px; }
+.watchlist-suggest { margin-top: 12px; padding-left: 0; color: #444; }
+.watchlist-modal-lede { font-size: 13px; color: #666; line-height: 1.45; margin: 0 0 14px; }
+.suggest-form { display: flex; flex-direction: column; gap: 12px; }
+.suggest-form label { display: flex; flex-direction: column; gap: 5px; font-size: 12px; color: #666; }
+.suggest-form input, .suggest-form textarea {
+  font-family: inherit; font-size: 13px; color: #222; border: 1px solid #e2e2e2;
+  border-radius: 8px; padding: 8px 10px;
+}
+.suggest-optional { color: #bbb; font-weight: 400; }
+.suggest-status.ok { font-size: 13px; color: #14532d; margin: 0; }
+
+/* Automotive group chooser pills */
+.group-pills-wrap { margin-bottom: 18px; }
+.group-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.group-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  border: 1px solid #ececec; background: #fff; color: #333;
+  border-radius: 999px; padding: 7px 12px 7px 10px; cursor: pointer; font-family: inherit; font-size: 13px;
+}
+.group-pill:hover { background: #fafafa; }
+.group-pill.selected { background: var(--pill-bg); border-color: transparent; color: var(--pill-fg); }
+.group-pill-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--pill-fg, #999); flex-shrink: 0; }
+.group-pill-meta { font-size: 11px; color: #999; }
+.group-pill.selected .group-pill-meta { color: inherit; opacity: 0.7; }
+.group-pills-hint { font-size: 12px; color: #999; margin: 8px 0 0; }
